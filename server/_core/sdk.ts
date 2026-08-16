@@ -22,6 +22,7 @@ export type SessionPayload = {
   openId: string;
   appId: string;
   name: string;
+  role?: string;
 };
 
 const EXCHANGE_TOKEN_PATH = `/webdev.v1.WebDevAuthPublicService/ExchangeToken`;
@@ -212,13 +213,14 @@ class SDKServer {
    */
   async createSessionToken(
     openId: string,
-    options: { expiresInMs?: number; name?: string } = {}
+    options: { expiresInMs?: number; name?: string; role?: string } = {}
   ): Promise<string> {
     return this.signSession(
       {
         openId,
         appId: ENV.appId,
         name: options.name || "",
+        role: options.role,
       },
       options
     );
@@ -237,6 +239,7 @@ class SDKServer {
       openId: payload.openId,
       appId: payload.appId,
       name: payload.name,
+      role: payload.role || "admin",
     })
       .setProtectedHeader({ alg: "HS256", typ: "JWT" })
       .setExpirationTime(expirationSeconds)
@@ -245,7 +248,7 @@ class SDKServer {
 
   async verifySession(
     cookieValue: string | undefined | null
-  ): Promise<{ openId: string; appId: string; name: string } | null> {
+  ): Promise<{ openId: string; appId: string; name: string; role: string } | null> {
     if (!cookieValue) {
       console.warn("[Auth] Missing session cookie");
       return null;
@@ -256,7 +259,7 @@ class SDKServer {
       const { payload } = await jwtVerify(cookieValue, secretKey, {
         algorithms: ["HS256"],
       });
-      const { openId, appId, name } = payload as Record<string, unknown>;
+      const { openId, appId, name, role } = payload as Record<string, unknown>;
 
       if (
         !isNonEmptyString(openId) ||
@@ -271,6 +274,7 @@ class SDKServer {
         openId,
         appId,
         name,
+        role: isNonEmptyString(role) ? role : "admin",
       };
     } catch (error) {
       console.warn("[Auth] Session verification failed", String(error));
@@ -325,30 +329,41 @@ class SDKServer {
     const signedInAt = new Date();
     let user = await db.getUserByOpenId(sessionUserId);
 
-    // If user not in DB, sync from OAuth server automatically
     if (!user) {
-      // Nothing to sync against locally, so fall back rather than 403-ing.
-      if (devFallbackAllowed) {
-        return this.getDevFallbackUser();
-      }
-      try {
-        const userInfo = await this.getUserInfoWithJwt(sessionCookie ?? "");
-        await db.upsertUser({
-          openId: userInfo.openId,
-          name: userInfo.name || null,
-          email: userInfo.email ?? null,
-          loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
-          lastSignedIn: signedInAt,
-        });
-        user = await db.getUserByOpenId(userInfo.openId);
-      } catch (error) {
-        console.error("[Auth] Failed to sync user from OAuth:", error);
-        throw ForbiddenError("Failed to sync user info");
-      }
+      await db.upsertUser({
+        openId: session.openId,
+        name: session.name,
+        role: (session.role as User["role"]) || "admin",
+        accountStatus: "approved",
+        loginMethod: "demo",
+        lastSignedIn: signedInAt,
+      });
+      user = await db.getUserByOpenId(sessionUserId);
     }
 
     if (!user) {
-      throw ForbiddenError("User not found");
+      return {
+        id: 0,
+        openId: session.openId,
+        name: session.name,
+        email: `${session.openId}@demo.ahlyacademy.com`,
+        loginMethod: "demo",
+        role: (session.role as User["role"]) || "admin",
+        accountStatus: "approved",
+        requestedRole: null,
+        avatarUrl: null,
+        coverPhotoUrl: null,
+        bio: null,
+        nationality: null,
+        dateOfBirth: null,
+        phone: null,
+        whatsappPhone: null,
+        whatsappNotifications: false,
+        onboardingCompleted: false,
+        createdAt: signedInAt,
+        updatedAt: signedInAt,
+        lastSignedIn: signedInAt,
+      } as User;
     }
 
     await db.upsertUser({

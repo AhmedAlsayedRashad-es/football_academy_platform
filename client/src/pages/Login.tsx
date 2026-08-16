@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { ArrowLeft, LogIn } from "lucide-react";
 
@@ -23,23 +22,30 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("admin");
-
-  const loginMutation = trpc.auth.login.useMutation({
-    onSuccess: (data) => {
-      const dest = ROLE_REDIRECTS[data.role || role] || "/dashboard";
-      window.location.href = dest;
-    },
-    onError: (error) => {
-      toast.error(error.message || "Login failed");
-    },
-  });
+  const [pending, setPending] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    loginMutation.mutate({
-      email,
-      password,
-      role: role as "admin" | "coach" | "parent" | "player" | "nutritionist" | "mental_coach" | "physical_trainer",
+    setPending(true);
+    void fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ email, password, role }),
+    }).then(async (res) => {
+      const text = await res.text();
+      if (!text) {
+        toast.error("Login failed: empty response from server");
+        setPending(false);
+        return;
+      }
+      const data = JSON.parse(text);
+      if (!res.ok || !data.success) {
+        toast.error(data.error || "Login failed");
+        setPending(false);
+        return;
+      }
+      window.location.href = ROLE_REDIRECTS[data.role || role] || "/dashboard";
     });
   };
 
@@ -111,8 +117,8 @@ export default function Login() {
                   </SelectContent>
                 </Select>
               </div>
-              <Button type="submit" className="w-full" disabled={loginMutation.isPending}>
-                {loginMutation.isPending ? "Signing in..." : "Sign In"}
+              <Button type="submit" className="w-full" disabled={pending}>
+                {pending ? "Signing in..." : "Sign In"}
               </Button>
             </form>
           </CardContent>
