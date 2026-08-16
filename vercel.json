@@ -5,10 +5,11 @@
   "outputDirectory": "dist/public",
   "installCommand": "npm install",
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api" }
+    { "source": "/api/:path*", "destination": "/api/:path*" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
   "functions": {
-    "api/index.js": {
+    "api/[[...path]].js": {
       "includeFiles": "dist/**",
       "maxDuration": 60
     }
