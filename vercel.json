@@ -11,7 +11,7 @@
     "api/login.js": {
       "maxDuration": 30
     },
-    "api/[[...path]].js": {
+    "api/[...path].js": {
       "includeFiles": "dist/**",
       "maxDuration": 60
     }

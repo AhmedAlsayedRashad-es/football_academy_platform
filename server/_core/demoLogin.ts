@@ -19,6 +19,33 @@ const GUEST_ACCOUNTS: Record<string, { openId: string; name: string; role: strin
 };
 
 export function registerDemoLoginRoute(app: Express) {
+  app.post("/api/login", async (req: Request, res: Response) => {
+    const email = String(req.body?.email || "demo@ahlyacademy.com").trim().toLowerCase() || "demo@ahlyacademy.com";
+    const allowed = ["admin", "coach", "parent", "player", "nutritionist", "mental_coach", "physical_trainer"];
+    const role = allowed.includes(req.body?.role) ? req.body.role : "admin";
+    const name = String(req.body?.name || "").trim() || email.split("@")[0] || "Demo User";
+    const openId = `demo_${email.replace(/[^a-z0-9]+/g, "_")}`.slice(0, 64);
+
+    await upsertUser({
+      openId,
+      name,
+      email,
+      role: role as "admin" | "coach" | "parent" | "player" | "nutritionist" | "mental_coach" | "physical_trainer",
+      accountStatus: "approved",
+      loginMethod: "demo",
+      lastSignedIn: new Date(),
+    });
+
+    const token = await sdk.createSessionToken(openId, {
+      name,
+      role,
+      expiresInMs: 24 * 60 * 60 * 1000,
+    });
+    const cookieOptions = getSessionCookieOptions(req);
+    res.cookie(COOKIE_NAME, token, { ...cookieOptions, maxAge: 24 * 60 * 60 * 1000 });
+    res.json({ success: true, role });
+  });
+
   // Guest login endpoint - creates a demo session for quick platform exploration
   app.get("/api/guest-login", async (req: Request, res: Response) => {
     const role = typeof req.query.role === "string" ? req.query.role : "admin";
