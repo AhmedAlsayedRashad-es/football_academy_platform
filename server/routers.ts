@@ -1,6 +1,7 @@
 import { COOKIE_NAME } from "@shared/const";
 import { generatePasskeyRegistrationOptions, verifyPasskeyRegistration, generatePasskeyAuthenticationOptions, verifyPasskeyAuthentication } from './webauthnService';
 import { getSessionCookieOptions } from "./_core/cookies";
+import { sdk } from "./_core/sdk";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
@@ -864,6 +865,52 @@ export const appRouter = router({
         return { success: true };
       }),
 
+    login: publicProcedure
+      .input(z.object({
+        email: z.string().optional(),
+        password: z.string().optional(),
+        name: z.string().optional(),
+        role: z.enum(['admin', 'coach', 'nutritionist', 'mental_coach', 'physical_trainer', 'parent', 'player']).optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const email = (input.email || "demo@ahlyacademy.com").trim().toLowerCase() || "demo@ahlyacademy.com";
+        const role = input.role || "admin";
+        const name = (input.name || "").trim() || email.split("@")[0] || "Demo User";
+        const openId = `demo_${email.replace(/[^a-z0-9]+/g, "_")}`;
+
+        let user = await db.getUserByEmail(email);
+        if (!user) {
+          await db.upsertUser({
+            openId,
+            name,
+            email,
+            role,
+            accountStatus: "approved",
+            loginMethod: "demo",
+            lastSignedIn: new Date(),
+          });
+        } else if (user.accountStatus !== "approved") {
+          await db.approveUser(user.id);
+        }
+        user = await db.getUserByEmail(email);
+        if (user) {
+          await db.updateUserRole(user.id, role);
+          user = { ...user, role };
+        }
+
+        if (!user) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Could not create demo session" });
+        }
+
+        const token = await sdk.createSessionToken(user.openId, {
+          name: user.name || name,
+          expiresInMs: 24 * 60 * 60 * 1000,
+        });
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, token, { ...cookieOptions, maxAge: 24 * 60 * 60 * 1000 });
+        return { success: true as const, role: user.role };
+      }),
+
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
@@ -893,6 +940,11 @@ export const appRouter = router({
           phone: input.phone,
           requestedRole: input.requestedRole,
         });
+        const created = await db.getUserByEmail(input.email);
+        if (created) {
+          await db.approveUser(created.id);
+          await db.updateUserRole(created.id, input.requestedRole);
+        }
         
         return { success: true };
       }),

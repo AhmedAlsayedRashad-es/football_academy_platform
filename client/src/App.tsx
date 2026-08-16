@@ -12,6 +12,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 
 // Public Pages
 import Home from "./pages/Home";
+import Login from "./pages/Login";
 import Register from "./pages/Register";
 import UserRegistration from "./pages/UserRegistration";
 import PendingApproval from "./pages/PendingApproval";
@@ -257,6 +258,7 @@ function Router() {
     <Suspense fallback={<PageLoader />}><Switch>
       {/* ==================== PUBLIC PAGES ==================== */}
       <Route path="/" component={Home} />
+      <Route path="/login" component={Login} />
       <Route path="/team" component={Team} />
       <Route path="/register" component={Register} />
       <Route path="/user-registration" component={UserRegistration} />

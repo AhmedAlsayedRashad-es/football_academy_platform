@@ -16,7 +16,13 @@ export async function setupVite(app: Express, server: Server) {
   const vite = await createViteServer({
     ...viteConfig,
     configFile: false,
-    server: serverOptions,
+    server: {
+      ...serverOptions,
+      watch: {
+        usePolling: true,
+        interval: 2000,
+      },
+    },
     appType: "custom",
   });
 
