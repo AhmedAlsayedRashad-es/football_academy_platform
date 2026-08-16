@@ -5,13 +5,14 @@
   "outputDirectory": "dist/public",
   "installCommand": "npm install",
   "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "functions": {
     "api/login.js": {
       "maxDuration": 30
     },
-    "api/[...path].js": {
+    "api/index.js": {
       "includeFiles": "dist/**",
       "maxDuration": 60
     }
