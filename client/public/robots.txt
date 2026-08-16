@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+Allow: /blog
+Allow: /gallery
+Allow: /enroll
+Allow: /contact
+Allow: /pricing
+Allow: /careers
+Allow: /public/player/
+
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /api/
+Disallow: /players
+Disallow: /matches
+Disallow: /training
+Disallow: /finance
+Disallow: /settings
+
+Sitemap: https://footyacad-wh9wgp4d.manus.space/sitemap.xml

@@ -1,0 +1,66 @@
+{
+  "name": "Al Ahly Football Academy",
+  "short_name": "Al Ahly Academy",
+  "description": "Manage your football academy — players, training, finance, and events in one place.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#dc2626",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["sports", "education", "productivity"],
+  "icons": [
+    {
+      "src": "https://d2xsxph8kpxj0f.cloudfront.net/310419663031075609/WH9WgP4dQPFH4Fcti7mkSc/al-ahly-logo_41a025a6.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://d2xsxph8kpxj0f.cloudfront.net/310419663031075609/WH9WgP4dQPFH4Fcti7mkSc/al-ahly-logo_41a025a6.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "View your academy dashboard",
+      "url": "/dashboard",
+      "icons": [{ "src": "https://d2xsxph8kpxj0f.cloudfront.net/310419663031075609/WH9WgP4dQPFH4Fcti7mkSc/al-ahly-logo_41a025a6.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Attendance",
+      "short_name": "Attendance",
+      "description": "Mark player attendance",
+      "url": "/attendance",
+      "icons": [{ "src": "https://d2xsxph8kpxj0f.cloudfront.net/310419663031075609/WH9WgP4dQPFH4Fcti7mkSc/al-ahly-logo_41a025a6.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Players",
+      "short_name": "Players",
+      "description": "Manage your players",
+      "url": "/players",
+      "icons": [{ "src": "https://d2xsxph8kpxj0f.cloudfront.net/310419663031075609/WH9WgP4dQPFH4Fcti7mkSc/al-ahly-logo_41a025a6.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Training",
+      "short_name": "Training",
+      "description": "View training sessions",
+      "url": "/training",
+      "icons": [{ "src": "https://d2xsxph8kpxj0f.cloudfront.net/310419663031075609/WH9WgP4dQPFH4Fcti7mkSc/al-ahly-logo_41a025a6.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "My Fees",
+      "short_name": "Fees",
+      "description": "View your academy fees",
+      "url": "/my-fees",
+      "icons": [{ "src": "https://d2xsxph8kpxj0f.cloudfront.net/310419663031075609/WH9WgP4dQPFH4Fcti7mkSc/al-ahly-logo_41a025a6.png", "sizes": "96x96" }]
+    }
+  ]
+}

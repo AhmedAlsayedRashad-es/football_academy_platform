@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Offline — Football Academy</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+    }
+    .container { max-width: 480px; }
+    .icon {
+      width: 80px; height: 80px;
+      background: #1e293b;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 2.5rem;
+    }
+    h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.75rem; color: #f8fafc; }
+    p { color: #94a3b8; line-height: 1.6; margin-bottom: 1.5rem; }
+    .badge {
+      display: inline-block;
+      background: #ef4444;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    button {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover { background: #2563eb; }
+    .tips {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: #1e293b;
+      border-radius: 0.75rem;
+      text-align: left;
+    }
+    .tips h3 { font-size: 0.875rem; font-weight: 600; color: #64748b; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .tips ul { list-style: none; }
+    .tips li { padding: 0.35rem 0; color: #94a3b8; font-size: 0.875rem; }
+    .tips li::before { content: "→ "; color: #3b82f6; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">⚽</div>
+    <span class="badge">No Connection</span>
+    <h1>You're Offline</h1>
+    <p>The Football Academy Platform needs an internet connection to load. Please check your connection and try again.</p>
+    <button onclick="window.location.reload()">Try Again</button>
+    <div class="tips">
+      <h3>What you can do</h3>
+      <ul>
+        <li>Check your Wi-Fi or mobile data</li>
+        <li>Try refreshing the page once connected</li>
+        <li>Previously visited pages may still be available</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

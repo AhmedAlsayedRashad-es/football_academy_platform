@@ -1,0 +1,117 @@
+# Dependencies
+**/node_modules/
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+*.dist
+.vite/
+.turbo/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+!.env.sample
+*.pem
+*.key
+credentials.json
+secrets.json
+
+# Local / AI tooling dumps (may contain DB queries and credentials)
+.manus/
+.claude/
+.webdev/
+.cursor/
+.project-config.json
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.code-workspace
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+*.bak
+
+# Coverage
+coverage/
+*.lcov
+.nyc_output/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional caches
+.npm
+.eslintcache
+.cache/
+.parcel-cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+.node_repl_history
+
+# Test / pack artifacts
+*.tgz
+.yarn-integrity
+
+# Temporary folders and accidental files
+tmp/
+temp/
+tatus --short
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Uploads and large media
+uploads/
+client/public/*.mp4
+*.mp4
+*.mov
+*.avi
+*.zip
+
+# Local credential-fix / probe scripts (contain secrets)
+fix-playermaker-credentials.mjs
+fix-playermaker-db.ts
+test-playermaker-direct.mjs
+
+# Debug / probe scripts output
+gallery_status.txt
