@@ -11,7 +11,7 @@ import { registerDemoLoginRoute } from "./demoLogin";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { createUploadRouter } from "../uploadEndpoint";
-import { serveStatic, setupVite } from "./vite";
+import { serveStatic } from "./static";
 import { startFeeReminderScheduler } from "../feeReminderScheduler";
 import { createSessionsRestRouter } from "../sessionsRestRouter";
 import { stripe } from "../stripeService";
@@ -58,7 +58,8 @@ async function startServer() {
     const origin = req.headers.origin || '';
     const isAllowed = !origin
       || process.env.NODE_ENV === 'development'
-      || allowedOrigins.some(o => origin.startsWith(o));
+      || allowedOrigins.some(o => origin.startsWith(o))
+      || origin.endsWith(".vercel.app");
     if (isAllowed) {
       res.setHeader('Access-Control-Allow-Origin', origin || '*');
       res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -170,23 +171,28 @@ async function startServer() {
   );
   // development mode uses Vite, production mode uses static files
   if (process.env.NODE_ENV === "development") {
+    const { setupVite } = await import("./vite");
     await setupVite(app, server);
-  } else {
+  } else if (!process.env.VERCEL) {
     serveStatic(app);
   }
 
-  const preferredPort = parseInt(process.env.PORT || "3000");
-  const port = await findAvailablePort(preferredPort);
+  if (!process.env.VERCEL) {
+    const preferredPort = parseInt(process.env.PORT || "3000");
+    const port = await findAvailablePort(preferredPort);
 
-  if (port !== preferredPort) {
-    console.log(`Port ${preferredPort} is busy, using port ${port} instead`);
+    if (port !== preferredPort) {
+      console.log(`Port ${preferredPort} is busy, using port ${port} instead`);
+    }
+
+    server.listen(port, () => {
+      console.log(`Server running on http://localhost:${port}/`);
+      startFeeReminderScheduler();
+    });
   }
 
-  server.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}/`);
-    // Start background jobs
-    startFeeReminderScheduler();
-  });
+  return app;
 }
 
-startServer().catch(console.error);
+const app = await startServer();
+export default app;
